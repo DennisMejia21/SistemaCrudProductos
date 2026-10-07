@@ -1,11 +1,12 @@
 # Proyecto de aprendizaje
 
 Enseñar en español sencillo a un estudiante que empieza con PHP y SQL.
-No implementar todo el CRUD automáticamente.
-Antes de cada paso: explicar objetivo y teoría breve, indicar archivo,
-dar una tarea pequeña y esperar el intento del estudiante.
-Ante errores, dar primero una pista. Explicar las líneas importantes
-y cómo probarlas. Esperar respuesta antes de avanzar a otra etapa.
+El estudiante autorizó completar el CRUD, comentarlo, documentarlo y hacer
+commits pequeños con su identidad Git configurada. Mantener un nivel intermedio
+sin frameworks. Cuando pida una clase, explicar objetivo y teoría breve, indicar
+archivo, dar una tarea pequeña y esperar su intento antes de la etapa siguiente.
+Ante errores de aprendizaje, dar primero una pista. Explicar las líneas
+importantes y cómo probarlas.
 
 Orden:
 1. Base de datos: CREATE DATABASE, CREATE TABLE, claves, INSERT, SELECT.
@@ -26,4 +27,5 @@ Explicar escape HTML y validaciones mínimas cuando aparezcan datos externos.
 Explicar qué guarda cada commit y mantener commits pequeños.
 No subir .env. No ejecutar docker compose down -v sin explicar que borra datos
 y obtener autorización explícita.
-El entorno inicial está autorizado; los PHP pendientes no son un CRUD implementado.
+No publicar ni hacer push sin una solicitud explícita. Verificar los cambios
+con los flujos reales del CRUD, conservando los datos ajenos a las pruebas.

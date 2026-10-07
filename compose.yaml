@@ -1,4 +1,5 @@
 services:
+  # Apache sirve src/; el volumen permite ver cambios sin reconstruir la imagen.
   web:
     build: .
     ports:
@@ -14,14 +15,18 @@ services:
       db:
         condition: service_healthy
 
+  # MariaDB crea la base y ejecuta database/ cuando el volumen es nuevo.
   db:
     image: mariadb:11.4
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
     volumes:
       - db_data:/var/lib/mysql
+      - ./database/database.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
@@ -29,6 +34,7 @@ services:
       retries: 20
       start_period: 30s
 
+  # Herramienta visual para practicar SQL; la aplicación no depende de ella.
   phpmyadmin:
     image: phpmyadmin:5.2-apache
     ports:
@@ -40,4 +46,5 @@ services:
         condition: service_healthy
 
 volumes:
+  # Conserva los registros entre reinicios y recreaciones de los contenedores.
   db_data:

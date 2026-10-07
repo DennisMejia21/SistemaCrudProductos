@@ -3,3 +3,6 @@
 !.env.example
 *.log
 .DS_Store
+# Las copias de la base pueden contener datos privados: no subirlas a Git.
+backups/
+__pycache__/
