@@ -1,0 +1,4 @@
+-- Carpeta de estudio: escribiremos las consultas juntos.
+-- Este archivo NO se ejecuta automáticamente al iniciar Docker.
+-- Primera tarea: escribir CREATE DATABASE y USE.
+-- Luego: marcas, productos, relación, INSERT y SELECT.

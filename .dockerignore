@@ -1,0 +1,7 @@
+.git
+.env
+.env.*
+database
+docs
+README.md
+AGENTS.md
