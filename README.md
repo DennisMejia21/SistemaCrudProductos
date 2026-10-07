@@ -1,104 +1,120 @@
-# SistemaCrudProductos
+# CRUD de productos y marcas
 
-Práctica guiada de CRUD con PHP, PDO y MariaDB. Estado: entorno inicial.
-Las tablas y el CRUD todavía no están implementados.
+Proyecto de práctica completo con PHP 8.3, PDO, MariaDB 11.4, HTML y CSS propio.
+Mantiene los archivos usados en clase, con comentarios para seguir el recorrido
+de cada consulta y formulario. Sin frameworks ni dependencias de un CDN.
 
-## Preparar el entorno
+## Qué podés hacer
 
-Requisitos: Git, Docker y Docker Compose (comando docker compose).
+- Crear, listar, ver, editar y eliminar productos.
+- Crear, editar y eliminar marcas; no permite borrar una marca en uso.
+- Buscar por producto/marca y filtrar por marca y estado.
+- Ver resumen del catálogo, precios y fechas de carga.
+- Usar formularios precargados, mensajes y validaciones que conservan los campos.
+- Estudiar consultas preparadas, JOIN, sesiones, escape HTML y tokens CSRF.
 
-Si todavía no tenés el repositorio:
+Es una aplicación de práctica local sin login ni roles. Para un despliegue público
+se necesita agregar autenticación, autorización y configuración de producción.
+
+## Arranque en tu computadora
+
+Requisitos: Git, Docker y Docker Compose (`docker compose`).
+Si todavía no tenés el repo:
+
 ```bash
 git clone git@github.com:DennisMejia21/SistemaCrudProductos.git
 cd SistemaCrudProductos
 ```
 
-Si ya lo tenés, entrá a esa carpeta y actualizá main con git pull --ff-only
-después de revisar git status y guardar cualquier cambio propio.
+Si ya lo tenés, usá ese checkout. Crear `.env` solo si todavía no existe:
 
-Crear la configuración local (solo la primera vez):
 ```bash
 cp .env.example .env
-docker compose up -d --build
+docker compose up -d --build --wait --wait-timeout 120
 docker compose ps
 ```
 
-- Página de práctica: http://localhost:8080
-- phpMyAdmin: http://localhost:8081
-- Inicio de sesión inicial en phpMyAdmin: root y el valor DB_ROOT_PASSWORD de .env.
+En un volumen nuevo la base, las tablas y cuatro ejemplos se crean automáticamente.
+Si conservás el volumen del entorno inicial, completá su esquema sin borrar datos:
 
-.env contiene configuración local y no se sube a GitHub.
-.env.example es una plantilla con credenciales ficticias de práctica.
-Si los puertos están ocupados, modificá APP_PORT o PMA_PORT en .env.
+```bash
+bash scripts/init-db.sh --seed
+docker compose up -d --wait --wait-timeout 120
+```
 
-## Qué prepara Docker
+En tu computadora, abrí `localhost:8080` para el catálogo y `localhost:8081` para
+phpMyAdmin. Usá los puertos de `.env` si los cambiaste. Para administrar en
+phpMyAdmin, el usuario es root y la contraseña es DB_ROOT_PASSWORD de tu `.env`.
+Para consultar como la aplicación, usá DB_USER y DB_PASSWORD.
+No publiques las credenciales de práctica ni subas `.env` a GitHub.
 
-- Dockerfile: PHP 8.3 con Apache y la extensión pdo_mysql.
-- compose.yaml: coordina web, db y phpmyadmin.
-- src/: carpeta pública servida por Apache, con los nombres utilizados en clase.
-- db_data: volumen que conserva los datos entre reinicios.
-- DB_HOST será db: dentro de Docker, es el nombre del servicio de base de datos.
+## Estructura
 
-No se crea automáticamente crud_productos para poder practicar CREATE DATABASE.
-MariaDB crea sus tablas internas y el usuario crud_usuario, inicialmente sin
-permisos sobre nuestra futura base. Después de crearla aprenderemos a otorgarlos.
-Las variables de inicialización de MariaDB solo se aplican con un volumen nuevo;
-editar la contraseña en .env no cambia la de una base ya inicializada.
+```text
+SistemaCrudProductos/
+├── AGENTS.md
+├── Dockerfile
+├── compose.yaml
+├── .env.example          # plantilla compartida
+├── .env                  # local, ignorado
+├── .gitignore
+├── .dockerignore
+├── database/
+│   ├── database.sql      # tablas y restricciones
+│   └── seed.sql          # datos de ejemplo
+├── scripts/init-db.sh    # preparación sin borrar el volumen
+├── tests/smoke.py        # pruebas HTTP
+├── docs/                 # guías de estudio y comandos
+└── src/                  # carpeta pública que sirve Apache
+    ├── conexion.php
+    ├── funciones.php
+    ├── script.php
+    ├── index.php
+    ├── show.php
+    ├── new.php
+    ├── edit.php
+    ├── delete.php
+    ├── marcas.php
+    ├── partials/
+    │   ├── header.php
+    │   ├── footer.php
+    │   └── formulario-producto.php
+    └── assets/css/estilos.css
+```
 
-## Archivos
+La relación es `productos.marca_id → marcas.id`. Cada producto tiene una marca;
+cada marca puede tener muchos productos. Los SELECT con JOIN muestran el nombre
+de marca sin duplicarlo en cada producto.
 
-| Archivo | Para qué servirá |
+## Documentación para aprender
+
+| Guía | Contenido |
 | --- | --- |
-| src/index.php | Listado; hoy solo muestra la página de bienvenida |
-| src/conexion.php | Conexión PDO, etapa 3 |
-| src/show.php | Un producto, etapa 5 |
-| src/new.php | Formulario de alta, etapa 6 |
-| src/script.php | Procesar acciones de formularios |
-| src/edit.php | Formulario de edición, etapa 7 |
-| src/delete.php | Confirmar eliminación, etapa 8 |
-| src/funciones.php | Funciones reutilizables, etapa 9 |
-| src/assets/css/estilos.css | Estilos básicos |
-| database/database.sql | Consultas que escribirá el estudiante |
-| docs/etapa-01.md | Primera tarea y conceptos |
-| AGENTS.md | Reglas para mantener la enseñanza paso a paso |
+| [Código explicado](docs/GUIA-CODIGO.md) | Todos los archivos, funciones, GET/POST, PDO, JOIN, validaciones y ejercicios. |
+| [SQL](docs/SQL.md) | CREATE DATABASE, INSERT, SELECT, UPDATE, DELETE y relaciones. |
+| [Docker](docs/DOCKER.md) | Conceptos, comandos habituales, backups y solución de errores. |
+| [Git](docs/GIT.md) | Commits pequeños, identidad, ramas y envío al remoto. |
+| [Pruebas](docs/PRUEBAS.md) | Smoke test automático y recorrido manual. |
+| [Etapa 1](docs/etapa-01.md) | Primer ejercicio de repaso de base de datos. |
 
-Los PHP pendientes contienen únicamente comentarios.
-database.sql no está montado como script de inicialización: lo ejecutaremos
-manualmente en la pestaña SQL de phpMyAdmin, por partes y después de revisarlo.
-
-## Primera tarea
-
-Leé docs/etapa-01.md. Escribí CREATE DATABASE y USE en database/database.sql
-y compartí el intento antes de continuar.
-
-## Detener y diagnosticar
+## Comandos rápidos
 
 ```bash
-docker compose stop
-docker compose start
+docker compose ps
 docker compose logs --tail=50 web db
-```
-
-docker compose down también conserva el volumen. No agregues -v:
-esa opción elimina los datos guardados.
-
-## Git paso a paso
-
-El primer commit guarda el entorno y los archivos pendientes, no el CRUD.
-Después de revisar cada ejercicio, guardaremos únicamente sus cambios.
-Por ejemplo, al terminar la tabla marcas:
-
-```bash
+docker compose stop
+docker compose up -d --wait
+python3 tests/smoke.py
+git status
 git diff
-git add database/database.sql
-git commit -m "crear tabla marcas"
 ```
 
-git add selecciona cambios; git commit crea una versión local;
-git push la envía a GitHub. No guardes credenciales en los commits.
+`python3` solo es necesario para las pruebas, no para ejecutar la aplicación.
+Los datos están en `db_data`. `docker compose down` conserva ese volumen;
+agregar `-v` lo elimina y borra los registros. Cambiar la contraseña en `.env`
+no cambia la contraseña de una base ya inicializada.
 
-## Verificación pendiente
-
-El entorno debe probarse con Docker en la computadora del estudiante.
-La página inicial debe abrir y phpMyAdmin debe permitir iniciar sesión.
-Todavía no corresponde probar conexión PDO, tablas ni operaciones CRUD.
+En la nube, el setup utiliza `DOCKER_CONFIG=/workspace/.docker-crud` por los
+permisos de la carpeta predeterminada. Los procesos deben volver a arrancarse
+en cada instancia; las instrucciones reutilizables están guardadas en el entorno.
+La publicación y el envío de commits a GitHub son pasos separados.
